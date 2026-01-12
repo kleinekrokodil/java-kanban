@@ -4,7 +4,7 @@ import task.*;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager mgr = new TaskManager();
+        TaskManager mgr = Managers.getDefault();
         // Две задачи
         Task task1 = new Task("task1", "first task");
         Task task2 = new Task("task2", "second task");
