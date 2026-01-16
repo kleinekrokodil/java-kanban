@@ -30,14 +30,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(Integer epicId) {
         Epic epic = epics.get(epicId);
-        history.add((Task)epic);
+        history.add(epic);
         return epic;
     }
 
     @Override
     public Subtask getSubtaskById(Integer subtaskId) {
         Subtask subtask = subtasks.get(subtaskId);
-        history.add((Task)subtask);
+        history.add(subtask);
         return subtask;
     }
 
@@ -111,40 +111,46 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public Integer createTask(Task task) {
         task.setId(++counter);
         tasks.put(task.getId(), task);
+        return task.getId();
     }
 
     @Override
-    public void createEpic(Epic epic) {
+    public Integer createEpic(Epic epic) {
         epic.setId(++counter);
         epics.put(epic.getId(), epic);
+        return epic.getId();
     }
 
     @Override
-    public void createSubtask(Subtask subtask, Epic epic) {
+    public Integer createSubtask(Subtask subtask, Epic epic) {
         subtask.setId(++counter);
         epic.addChild(subtask.getId());
         subtask.setEpicId(epic.getId());
         subtasks.put(subtask.getId(), subtask);
         calcEpicStatus(epic.getId());
+        return subtask.getId();
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Integer updateTask(Task task) {
         tasks.put(task.getId(), task);
+        return task.getId();
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public Integer updateEpic(Epic epic) {
         epics.put(epic.getId(), epic);
+        return epic.getId();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public Integer updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
         calcEpicStatus(subtask.getEpicId());
+        return subtask.getId();
     }
 
     @Override

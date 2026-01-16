@@ -7,6 +7,11 @@ public class Subtask extends Task {
         super(name, description);
     }
 
+    public Subtask(Subtask subtask) {
+        super(subtask);
+        this.epicId = subtask.epicId;
+    }
+
     public Integer getEpicId() {
         return epicId;
     }

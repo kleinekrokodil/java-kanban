@@ -10,6 +10,11 @@ public class Epic extends Task {
         childrenTasks = new HashSet<>();
     }
 
+    public Epic(Epic epic) {
+        super(epic);
+        this.childrenTasks = epic.childrenTasks;
+    }
+
     // Добавление подзадачи
     public void addChild(Integer subtaskId) {
         childrenTasks.add(subtaskId);
