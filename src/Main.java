@@ -23,6 +23,10 @@ public class Main {
         Subtask subtask3 = new Subtask("subtask3", "part of the second epic");
         mgr.createSubtask(subtask3, epic2);
 
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
+
         System.out.println("After create");
         System.out.println("mgr.getAllEpics():");
         System.out.println(mgr.getAllEpics());
@@ -30,6 +34,9 @@ public class Main {
         System.out.println(mgr.getAllTasks());
         System.out.println("mgr.getAllSubtasks()");
         System.out.println(mgr.getAllSubtasks());
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
 
         // Измените статусы созданных объектов, распечатайте их.
         // Проверьте, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач
@@ -47,6 +54,9 @@ public class Main {
         System.out.println(mgr.getAllTasks());
         System.out.println("mgr.getAllSubtasks()");
         System.out.println(mgr.getAllSubtasks());
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
 
         // удалить одну из задач и один из эпиков
         mgr.deleteTaskById(task2.getId());
@@ -60,5 +70,8 @@ public class Main {
         System.out.println(mgr.getAllTasks());
         System.out.println("mgr.getAllSubtasks()");
         System.out.println(mgr.getAllSubtasks());
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
     }
 }
