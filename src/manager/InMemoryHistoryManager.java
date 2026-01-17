@@ -2,19 +2,24 @@ package manager;
 
 import task.Task;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Integer capacity;
-    private final ArrayList<Task> history;
+    private final LinkedList<Task> history;
 
     public InMemoryHistoryManager(Integer capacity) {
         this.capacity = capacity;
-        history = new ArrayList<>(capacity);
+        history = new LinkedList<>();
     }
 
     @Override
     public void add(Task task) {
+        if (task == null) {
+            System.out.println("Передано не инициализированное задание");
+            return;
+        }
         if (history.size() == capacity) {
             history.removeFirst();
         }
@@ -23,7 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
-        return history;
+    public List<Task> getHistory() {
+        return List.copyOf(history);
     }
 }

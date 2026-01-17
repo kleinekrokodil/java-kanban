@@ -1,9 +1,10 @@
 package task;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class Epic extends Task {
-    private final HashSet<Integer> childrenTasks;
+    private final Set<Integer> childrenTasks;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -26,7 +27,7 @@ public class Epic extends Task {
     }
 
     // Получение списка подзадач
-    public HashSet<Integer> getChildrenTasks() {
+    public Set<Integer> getChildrenTasks() {
         return childrenTasks;
     }
 }

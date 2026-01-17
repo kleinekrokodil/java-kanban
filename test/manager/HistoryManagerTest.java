@@ -4,12 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class HistoryManagerTest {
-    private static HistoryManager historyManager;
+    private HistoryManager historyManager;
 
     @BeforeEach
     public void beforeEach() {
@@ -19,8 +19,9 @@ class HistoryManagerTest {
     @Test
     void add() {
         Task task = new Task("Test history add", "Test history add description");
+
         historyManager.add(task);
-        ArrayList<Task> history = historyManager.getHistory();
+        List<Task> history = historyManager.getHistory();
         assertNotNull(history, "После добавления задачи, история не должна быть пустой.");
         assertEquals(1, history.size(), "После добавления задачи, история не должна быть пустой.");
         task.setName("Another name");

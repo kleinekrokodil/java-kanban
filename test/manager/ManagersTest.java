@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 
 class ManagersTest {
     @Test
-    public void shouldReturnInitializedManagers() {
+    public void shouldReturnInitializedTaskManager() {
         TaskManager mgr = Managers.getDefault();
         assertNotNull(mgr, "Task manager not initialized");
+    }
 
+    @Test
+    public void shouldReturnInitializedHistoryManager() {
         HistoryManager history = Managers.getDefaultHistory();
         assertNotNull(history, "History manager not initialized");
     }
