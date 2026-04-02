@@ -50,8 +50,14 @@ public class Main {
         System.out.println("After statuses update");
         System.out.println("mgr.getAllEpics():");
         System.out.println(mgr.getAllEpics());
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
         System.out.println("mgr.getAllTasks():");
         System.out.println(mgr.getAllTasks());
+        System.out.println("mgr.getHistory()");
+        System.out.println(mgr.getHistory().size());
+        System.out.println(mgr.getHistory());
         System.out.println("mgr.getAllSubtasks()");
         System.out.println(mgr.getAllSubtasks());
         System.out.println("mgr.getHistory()");
