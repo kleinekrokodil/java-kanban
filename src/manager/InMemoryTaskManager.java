@@ -73,7 +73,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for (Integer taskId : tasks.keySet()) {
+        List<Integer> taskIds = new ArrayList<>(tasks.keySet());
+        for (Integer taskId : taskIds) {
             deleteTaskById(taskId);
         }
     }
@@ -87,7 +88,8 @@ public class InMemoryTaskManager implements TaskManager {
     // Эпики удаляем со всеми их подзадачами
     @Override
     public void deleteEpicById(Integer epicId) {
-        for (Integer subtaskId : epics.get(epicId).getChildrenTasks()) {
+        List<Integer> ids = new ArrayList<>(epics.get(epicId).getChildrenTasks());
+        for (Integer subtaskId : ids) {
             deleteSubtaskById(subtaskId);
         }
         epics.remove(epicId);
@@ -106,14 +108,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        for (Integer epicId : epics.keySet()) {
+        List<Integer> epicIds = new ArrayList<>(epics.keySet());
+        for (Integer epicId : epicIds) {
             deleteEpicById(epicId);
         }
     }
 
     @Override
     public void deleteAllSubtasks() {
-        for (Integer subtaskId : subtasks.keySet()) {
+        List<Integer> subtaskIds = new ArrayList<>(subtasks.keySet());
+        for (Integer subtaskId : subtaskIds) {
             deleteSubtaskById(subtaskId);
         }
     }
