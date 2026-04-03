@@ -24,21 +24,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(Integer taskId) {
-        Task task = tasks.get(taskId);
+        // Защита от изменений в обход update-методов
+        Task task = new Task(tasks.get(taskId));
         history.add(task);
         return task;
     }
 
     @Override
     public Epic getEpicById(Integer epicId) {
-        Epic epic = epics.get(epicId);
+        Epic epic = new Epic(epics.get(epicId));
         history.add(epic);
         return epic;
     }
 
     @Override
     public Subtask getSubtaskById(Integer subtaskId) {
-        Subtask subtask = subtasks.get(subtaskId);
+        Subtask subtask = new Subtask(subtasks.get(subtaskId));
         history.add(subtask);
         return subtask;
     }
@@ -120,14 +121,15 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer createTask(Task task) {
         task.setId(++counter);
-        tasks.put(task.getId(), task);
+        // Защита от последующих изменений в обход update-методов
+        tasks.put(task.getId(), new Task(task));
         return task.getId();
     }
 
     @Override
     public Integer createEpic(Epic epic) {
         epic.setId(++counter);
-        epics.put(epic.getId(), epic);
+        epics.put(epic.getId(), new Epic(epic));
         return epic.getId();
     }
 
@@ -136,26 +138,36 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setId(++counter);
         epic.addChild(subtask.getId());
         subtask.setEpicId(epic.getId());
-        subtasks.put(subtask.getId(), subtask);
+        subtasks.put(subtask.getId(), new Subtask(subtask));
+        updateEpic(epic);
         calcEpicStatus(epic.getId());
         return subtask.getId();
     }
 
     @Override
     public Integer updateTask(Task task) {
-        tasks.put(task.getId(), task);
+        if (!tasks.containsKey(task.getId())) {
+            return null; // Если задача не найдена - обновлять нечего
+        }
+        tasks.put(task.getId(), new Task(task));
         return task.getId();
     }
 
     @Override
     public Integer updateEpic(Epic epic) {
-        epics.put(epic.getId(), epic);
+        if (!epics.containsKey(epic.getId())) {
+            return null; // Если задача не найдена - обновлять нечего
+        }
+        epics.put(epic.getId(), new Epic(epic));
         return epic.getId();
     }
 
     @Override
     public Integer updateSubtask(Subtask subtask) {
-        subtasks.put(subtask.getId(), subtask);
+        if (!subtasks.containsKey(subtask.getId())) {
+            return null; // Если задача не найдена - обновлять нечего
+        }
+        subtasks.put(subtask.getId(), new Subtask(subtask));
         calcEpicStatus(subtask.getEpicId());
         return subtask.getId();
     }
@@ -190,6 +202,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.NEW);
         }
+        updateEpic(epic); // Поменять статус эпика в менеджере
     }
 
     public List<Task> getHistory() {
