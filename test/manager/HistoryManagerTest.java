@@ -26,7 +26,8 @@ class HistoryManagerTest {
         task.setDescription("Another Description");
         historyManager.add(task);
         history = historyManager.getHistory();
-        assertEquals(1, history.size(), "После обновления задачи количество записей не должно измениться");
+        assertEquals(1, history.size(),
+                "После обновления задачи количество записей не должно измениться");
     }
 
     @Test
@@ -42,10 +43,13 @@ class HistoryManagerTest {
         assertEquals(2, history.size(), "После добавления задачи история не должна быть пустой.");
         historyManager.remove(1);
         history = historyManager.getHistory();
-        assertEquals(1, history.size(), "После удаления одной из двух задач в истории должна остаться запись о второй");
-        assertEquals(2, history.getFirst().getId(), "ID оставшейся задачи не соответствует ожидаемому (2)");
+        assertEquals(1, history.size(),
+                "После удаления одной из двух задач в истории должна остаться запись о второй");
+        assertEquals(2, history.getFirst().getId(),
+                "ID оставшейся задачи не соответствует ожидаемому (2)");
         historyManager.remove(2);
         history = historyManager.getHistory();
-        assertEquals(0, history.size(), "После удаления единственной задачи история должна быть пустой.");
+        assertEquals(0, history.size(),
+                "После удаления единственной задачи история должна быть пустой.");
     }
 }
