@@ -14,9 +14,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private void linkLast(Task task) {
         Node node = new Node(task);
         final int id = task.getId();
-        if (id2Node.containsKey(id)) {
-            removeNode(id2Node.remove(id));
-        }
         id2Node.put(id, node);
         Node prevNode = tail;
         tail = node;
@@ -67,6 +64,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             System.out.println("Передано не инициализированное задание");
             return;
+        }
+        if (id2Node.containsKey(task.getId())) {
+            removeNode(id2Node.remove(task.getId()));
         }
         linkLast(task);
     }

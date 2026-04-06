@@ -26,6 +26,11 @@ public class Epic extends Task {
         childrenTasks.remove(subtaskId);
     }
 
+    // Удаление всех подзадач
+    public void removeAllChilds() {
+        childrenTasks.clear();
+    }
+
     // Получение списка подзадач
     public Set<Integer> getChildrenTasks() {
         return childrenTasks;
