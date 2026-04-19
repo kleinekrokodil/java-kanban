@@ -45,9 +45,10 @@ class TaskManagerTest {
 
         int taskWithEqualIdId = taskManager.createTask(taskWithEqualId);
         assertNotEquals(taskWithEqualIdId, taskId, "При добавлении новой задачи произошла замена старой");
+        // Замена id через сеттер
         taskWithEqualId.setId(taskId);
-        taskWithEqualIdId = taskManager.updateTask(taskWithEqualId);
-        assertEquals(taskWithEqualIdId, taskId, "При обновлении задачи изменился id");
+        taskManager.updateTask(taskWithEqualId);
+        assertEquals(taskWithEqualId.getName(), taskManager.getTaskById(taskId).getName(), "Должны обновиться данные задачи с id=1");
     }
 
     @Test
@@ -85,5 +86,48 @@ class TaskManagerTest {
         assertNotNull(subtasks, "Задачи не возвращаются.");
         assertEquals(1, subtasks.size(), "Неверное количество задач.");
         assertEquals(subtask, subtasks.getFirst(), "Задачи не совпадают.");
+    }
+
+    @Test
+    void testDeleteAllKindOfTasks() {
+        Epic epic = new Epic("Test createSubtask epic", "Test createSubtask epic description");
+        taskManager.createEpic(epic);
+        assertEquals(1, taskManager.getAllEpics().size(), "Неверное количество эпиков.");
+
+        Subtask subtask1 = new Subtask("Test createSubtask", "Test createSubtask description");
+        final int subtaskId = taskManager.createSubtask(subtask1, epic);
+        Subtask subtask2 = new Subtask("Test createSubtask 2", "Test createSubtask description 2");
+        taskManager.createSubtask(subtask2, epic);
+        assertEquals(2, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
+
+        Task task1 = new Task("Test createTask", "Test createTask description");
+        final int taskId = taskManager.createTask(task1);
+        Task task2 = new Task("Test createTask", "Test createTask description");
+        taskManager.createTask(task2);
+        assertEquals(2, taskManager.getAllTasks().size(), "Неверное количество задач.");
+
+        taskManager.deleteSubtaskById(subtaskId);
+        assertEquals(1, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(1, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+
+        taskManager.createSubtask(subtask1, epic);
+        taskManager.deleteAllSubtasks();
+        assertEquals(0, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(0, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+
+        taskManager.createSubtask(subtask1, epic);
+        taskManager.createSubtask(subtask2, epic);
+        assertEquals(2, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(2, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+
+        taskManager.deleteAllEpics();
+        assertEquals(0, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(0, taskManager.getAllEpics().size(), "Список эпиков должен быть пуст");
+
+        taskManager.deleteTaskById(taskId);
+        assertEquals(1, taskManager.getAllTasks().size(), "Неверное количество задач.");
+        taskManager.createTask(task1);
+        taskManager.deleteAllTasks();
+        assertEquals(0, taskManager.getAllTasks().size(), "Неверное количество задач.");
     }
 }
