@@ -1,11 +1,14 @@
 import manager.*;
 import task.*;
 
+//import java.io.File;
+
 public class Main {
 
     public static void main(String[] args) {
         TaskManager mgr = Managers.getDefault();
-        // Две задачи
+        //TaskManager mgr = FileBackedTaskManager.loadFromFile(new File("backup.csv"));
+        //Две задачи
         Task task1 = new Task("task1", "first task");
         Task task2 = new Task("task2", "second task");
         mgr.createTask(task1);
@@ -64,7 +67,7 @@ public class Main {
         System.out.println(mgr.getHistory().size());
         System.out.println(mgr.getHistory());
 
-        // удалить одну из задач и один из эпиков
+        /* удалить одну из задач и один из эпиков
         mgr.deleteTaskById(task2.getId());
         mgr.deleteEpicById(epic2.getId()); // Должен удалиться с subtask 3
         mgr.deleteSubtaskById(subtask1.getId()); // Статус эпика должен поменяться на NEW
@@ -78,6 +81,6 @@ public class Main {
         System.out.println(mgr.getAllSubtasks());
         System.out.println("mgr.getHistory()");
         System.out.println(mgr.getHistory().size());
-        System.out.println(mgr.getHistory());
+        System.out.println(mgr.getHistory());*/
     }
 }
