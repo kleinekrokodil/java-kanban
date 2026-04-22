@@ -218,4 +218,26 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() {
         return history.getHistory();
     }
+
+    // Добавление задачи в менеджер при восстановлении
+    protected void addTask(Task task) {
+        if (task.getType() == TaskType.EPIC) {
+            epics.put(task.getId(), new Epic((Epic) task));
+        } else if (task.getType() == TaskType.SUBTASK) {
+            subtasks.put(task.getId(), new Subtask((Subtask) task));
+        } else {
+            tasks.put(task.getId(), new Task(task));
+        }
+        // Установить значение счетчика для корректного создания последующих задач
+        counter = Integer.max(counter, task.getId());
+    }
+
+    // Восстановление связей между эпиками и подзадачами
+    protected void updateSubtasksDependencies() {
+        for (Integer subtaskId : subtasks.keySet()) {
+            Subtask subtask = subtasks.get(subtaskId);
+            Epic epic = epics.get(subtask.getEpicId());
+            epic.addChild(subtaskId);
+        }
+    }
 }
