@@ -36,7 +36,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerReadException("Невозможно восстановить состояние менеджера");
         }
         mgr.updateSubtasksDependencies();
-        mgr.save();
         return mgr;
     }
 
