@@ -5,8 +5,6 @@ import task.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -23,9 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
-        HashMap<Integer, Task> allTasks = new HashMap<>();
-        HashMap<Integer, Epic> allEpics = new HashMap<>();
-        HashMap<Integer, Subtask> allSubtasks = new HashMap<>();
+        FileBackedTaskManager mgr = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             while (reader.ready()) {
                 String line = reader.readLine();
@@ -33,54 +29,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = taskFromString(line);
                 if (task == null) {
                     throw new ManagerReadException("Ошибка при восстановлении задачи из файла");
-                } else if (task instanceof Epic) {
-                    allEpics.put(task.getId(), (Epic) task);
-                } else if (task instanceof Subtask) {
-                    allSubtasks.put(task.getId(), (Subtask) task);
-                } else {
-                    allTasks.put(task.getId(), task);
                 }
+                mgr.addTask(task);
             }
         } catch (IOException e) {
             throw new ManagerReadException("Невозможно восстановить состояние менеджера");
         }
-        FileBackedTaskManager mgr = new FileBackedTaskManager(file);
-        for (Integer id : allTasks.keySet()) {
-            mgr.createTask(allTasks.get(id));
-        }
-        for (Integer id : allEpics.keySet()) {
-            mgr.createEpic(allEpics.get(id));
-        }
-        for (Integer id : allSubtasks.keySet()) {
-            Subtask subtask = allSubtasks.get(id);
-            if (!allEpics.containsKey(subtask.getEpicId())) {
-                throw new ManagerReadException(
-                        String.format("Невозможно восстановить состояние менеджера: эпик с id=%d отсутствует",
-                                subtask.getEpicId())
-                );
-            }
-            Epic epic = allEpics.get(subtask.getEpicId());
-            mgr.createSubtask(subtask, epic);
-        }
+        mgr.updateSubtasksDependencies();
+        mgr.save();
         return mgr;
     }
 
     private void save() {
         // Словарь со строковыми представлениями всех задач, отсортированный по id
-        TreeMap<Integer, String> allTasks = new TreeMap<>();
-        for (Task task : getAllTasks()) {
-            allTasks.put(task.getId(), taskToString(task));
-        }
-        for (Epic epic : getAllEpics()) {
-            allTasks.put(epic.getId(), taskToString(epic));
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            allTasks.put(subtask.getId(), taskToString(subtask));
-        }
         try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
             writer.write(HEADER_STRING + "\n");
-            for (Integer id : allTasks.keySet()) {
-                writer.write(allTasks.get(id));
+            for (Task task : getAllTasks()) {
+                writer.write(taskToString(task));
+            }
+            for (Epic epic : getAllEpics()) {
+                writer.write(taskToString(epic));
+            }
+            for (Subtask subtask : getAllSubtasks()) {
+                writer.write(taskToString(subtask));
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Невозможно сохранить состояние менеджера");
@@ -89,9 +60,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String taskToString(Task task) {
         TaskType taskType = TaskType.TASK;
-        if (task instanceof Epic) {
+        if (task.getType() == TaskType.EPIC) {
             taskType = TaskType.EPIC;
-        } else if (task instanceof Subtask) {
+        } else if (task.getType() == TaskType.SUBTASK) {
             taskType = TaskType.SUBTASK;
         }
         return String.format("%d,%s,%s,%s,%s,%s\n",

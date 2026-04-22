@@ -35,4 +35,9 @@ public class Epic extends Task {
     public Set<Integer> getChildrenTasks() {
         return childrenTasks;
     }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
+    }
 }
