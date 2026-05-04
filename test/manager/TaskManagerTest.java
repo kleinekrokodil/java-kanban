@@ -91,13 +91,13 @@ class TaskManagerTest {
     @Test
     void testDeleteAllKindOfTasks() {
         Epic epic = new Epic("Test createSubtask epic", "Test createSubtask epic description");
-        taskManager.createEpic(epic);
+        Integer epicId = taskManager.createEpic(epic);
         assertEquals(1, taskManager.getAllEpics().size(), "Неверное количество эпиков.");
 
         Subtask subtask1 = new Subtask("Test createSubtask", "Test createSubtask description");
-        final int subtaskId = taskManager.createSubtask(subtask1, epic);
+        final int subtaskId = taskManager.createSubtask(subtask1, taskManager.getEpicById(epicId));
         Subtask subtask2 = new Subtask("Test createSubtask 2", "Test createSubtask description 2");
-        taskManager.createSubtask(subtask2, epic);
+        taskManager.createSubtask(subtask2, taskManager.getEpicById(epicId));
         assertEquals(2, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
 
         Task task1 = new Task("Test createTask", "Test createTask description");
@@ -108,17 +108,17 @@ class TaskManagerTest {
 
         taskManager.deleteSubtaskById(subtaskId);
         assertEquals(1, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(1, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+        assertEquals(1, taskManager.getEpicById(epic.getId()).getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
 
-        taskManager.createSubtask(subtask1, epic);
+        taskManager.createSubtask(subtask1, taskManager.getEpicById(epicId));
         taskManager.deleteAllSubtasks();
         assertEquals(0, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(0, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+        assertEquals(0, taskManager.getEpicById(epic.getId()).getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
 
-        taskManager.createSubtask(subtask1, epic);
-        taskManager.createSubtask(subtask2, epic);
+        taskManager.createSubtask(subtask1, taskManager.getEpicById(epicId));
+        taskManager.createSubtask(subtask2, taskManager.getEpicById(epicId));
         assertEquals(2, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(2, epic.getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
+        assertEquals(2, taskManager.getEpicById(epic.getId()).getChildrenTasks().size(), "Неверное количество подзадач в эпике.");
 
         taskManager.deleteAllEpics();
         assertEquals(0, taskManager.getAllSubtasks().size(), "Неверное количество подзадач.");
