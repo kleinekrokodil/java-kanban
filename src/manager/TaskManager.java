@@ -48,5 +48,7 @@ public interface TaskManager {
 
     void calcEpicStatus(Integer epicId);
 
+    void calcEpicDuration(Integer epicId);
+
     List<Task> getHistory();
 }

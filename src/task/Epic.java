@@ -13,7 +13,7 @@ public class Epic extends Task {
 
     public Epic(Epic epic) {
         super(epic);
-        this.childrenTasks = epic.childrenTasks;
+        this.childrenTasks =  new HashSet<>(epic.childrenTasks);
     }
 
     // Добавление подзадачи
@@ -27,13 +27,13 @@ public class Epic extends Task {
     }
 
     // Удаление всех подзадач
-    public void removeAllChilds() {
+    public void removeAllChildren() {
         childrenTasks.clear();
     }
 
     // Получение списка подзадач
     public Set<Integer> getChildrenTasks() {
-        return childrenTasks;
+        return new HashSet<>(childrenTasks);
     }
 
     @Override

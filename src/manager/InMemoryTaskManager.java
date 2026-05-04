@@ -2,6 +2,8 @@ package manager;
 
 import task.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
@@ -105,6 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.remove(subtaskId);
         history.remove(subtaskId);
         calcEpicStatus(epic.getId());
+        calcEpicDuration(epic.getId());
     }
 
     @Override
@@ -119,8 +122,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtasks() {
         for (Integer epicId : epics.keySet()) {
             Epic epic = epics.get(epicId);
-            epic.removeAllChilds();
+            epic.removeAllChildren();
             calcEpicStatus(epicId);
+            calcEpicDuration(epic.getId());
         }
         for (Integer subtaskId : subtasks.keySet()) {
             history.remove(subtaskId);
@@ -151,6 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.put(subtask.getId(), new Subtask(subtask));
         updateEpic(epic);
         calcEpicStatus(epic.getId());
+        calcEpicDuration(epic.getId());
         return subtask.getId();
     }
 
@@ -179,6 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtasks.put(subtask.getId(), new Subtask(subtask));
         calcEpicStatus(subtask.getEpicId());
+        calcEpicDuration(subtask.getEpicId());
         return subtask.getId();
     }
 
@@ -213,6 +219,24 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.NEW);
         }
         updateEpic(epic); // Поменять статус эпика в менеджере
+    }
+
+    @Override
+    public void calcEpicDuration(Integer epicId) {
+        Epic epic = getEpicById(epicId);
+        if (epic.getChildrenTasks().isEmpty()) {
+            return;
+        }
+        Duration epicDuration = Duration.ZERO;
+        LocalDateTime epicStart = null;
+        for (Subtask subtask : getEpicSubtasks(epicId)) {
+            if (epicStart == null || epicStart.isAfter(subtask.getStartTime())) {
+                epicStart = subtask.getStartTime();
+            }
+            epicDuration = epicDuration.plus(subtask.getDuration());
+        }
+        epic.setDuration(epicDuration.toMinutes());
+        epic.setStartTime(epicStart);
     }
 
     public List<Task> getHistory() {
