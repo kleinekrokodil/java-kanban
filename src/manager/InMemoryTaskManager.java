@@ -123,9 +123,14 @@ public class InMemoryTaskManager implements TaskManager {
         task.setId(++counter);
         // Защита от последующих изменений в обход update-методов
         Task newTask = new Task(task);
-        tasks.put(task.getId(), newTask);
-        addToPrioritizedTasks(newTask);
-        return task.getId();
+        try {
+            tasks.put(task.getId(), newTask);
+            addToPrioritizedTasks(newTask);
+            return task.getId();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -140,13 +145,18 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setId(++counter);
         epic.addChild(subtask.getId());
         subtask.setEpicId(epic.getId());
-        Subtask newSubtask = new Subtask(subtask);
-        subtasks.put(subtask.getId(), newSubtask);
-        addToPrioritizedTasks(newSubtask);
-        updateEpic(epic);
-        calcEpicStatus(epic.getId());
-        calcEpicDuration(epic.getId());
-        return subtask.getId();
+        try {
+            Subtask newSubtask = new Subtask(subtask);
+            subtasks.put(subtask.getId(), newSubtask);
+            addToPrioritizedTasks(newSubtask);
+            updateEpic(epic);
+            calcEpicStatus(epic.getId());
+            calcEpicDuration(epic.getId());
+            return subtask.getId();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -154,11 +164,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(task.getId())) {
             return null; // Если задача не найдена - обновлять нечего
         }
-        removeFromPrioritizedTasks(tasks.get(task.getId()));
-        Task newTask = new Task(task);
-        tasks.put(task.getId(), newTask);
-        addToPrioritizedTasks(newTask);
-        return task.getId();
+        try {
+            removeFromPrioritizedTasks(tasks.get(task.getId()));
+            Task newTask = new Task(task);
+            tasks.put(task.getId(), newTask);
+            addToPrioritizedTasks(newTask);
+            return task.getId();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -175,13 +190,18 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtasks.containsKey(subtask.getId())) {
             return null; // Если задача не найдена - обновлять нечего
         }
-        removeFromPrioritizedTasks(subtasks.get(subtask.getId()));
-        Subtask newSubtask = new Subtask(subtask);
-        subtasks.put(subtask.getId(), newSubtask);
-        addToPrioritizedTasks(newSubtask);
-        calcEpicStatus(subtask.getEpicId());
-        calcEpicDuration(subtask.getEpicId());
-        return subtask.getId();
+        try {
+            removeFromPrioritizedTasks(subtasks.get(subtask.getId()));
+            Subtask newSubtask = new Subtask(subtask);
+            subtasks.put(subtask.getId(), newSubtask);
+            addToPrioritizedTasks(newSubtask);
+            calcEpicStatus(subtask.getEpicId());
+            calcEpicDuration(subtask.getEpicId());
+            return subtask.getId();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -241,16 +261,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Добавление задачи в менеджер при восстановлении
     protected void addTask(Task task) {
-        if (task.getType() == TaskType.EPIC) {
-            epics.put(task.getId(), new Epic((Epic) task));
-        } else if (task.getType() == TaskType.SUBTASK) {
-            subtasks.put(task.getId(), new Subtask((Subtask) task));
-        } else {
-            tasks.put(task.getId(), new Task(task));
+        try {
+            if (task.getType() == TaskType.EPIC) {
+                epics.put(task.getId(), new Epic((Epic) task));
+            } else if (task.getType() == TaskType.SUBTASK) {
+                subtasks.put(task.getId(), new Subtask((Subtask) task));
+            } else {
+                tasks.put(task.getId(), new Task(task));
+            }
+            addToPrioritizedTasks(task);
+            // Установить значение счетчика для корректного создания последующих задач
+            counter = Integer.max(counter, task.getId());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
-        addToPrioritizedTasks(task);
-        // Установить значение счетчика для корректного создания последующих задач
-        counter = Integer.max(counter, task.getId());
     }
 
     // Восстановление связей между эпиками и подзадачами
@@ -288,8 +312,10 @@ public class InMemoryTaskManager implements TaskManager {
                 .anyMatch(t -> isIntersects(task, t));
     }
 
-    private void addToPrioritizedTasks(Task task) {
-        if (task.getStartTime() != null && task.getDuration() != null && !hasIntersections(task)) {
+    private void addToPrioritizedTasks(Task task) throws IllegalArgumentException {
+        if (hasIntersections(task)) {
+            throw new IllegalArgumentException("Задача пересекается по времени с другой задачей");
+        } else if (task.getStartTime() != null && task.getDuration() != null) {
             prioritizedTasks.add(task);
         }
     }
