@@ -124,8 +124,8 @@ public class InMemoryTaskManager implements TaskManager {
         // Защита от последующих изменений в обход update-методов
         Task newTask = new Task(task);
         try {
-            tasks.put(task.getId(), newTask);
             addToPrioritizedTasks(newTask);
+            tasks.put(task.getId(), newTask);
             return task.getId();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
@@ -147,8 +147,8 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setEpicId(epic.getId());
         try {
             Subtask newSubtask = new Subtask(subtask);
-            subtasks.put(subtask.getId(), newSubtask);
             addToPrioritizedTasks(newSubtask);
+            subtasks.put(subtask.getId(), newSubtask);
             updateEpic(epic);
             calcEpicStatus(epic.getId());
             calcEpicDuration(epic.getId());
@@ -164,14 +164,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(task.getId())) {
             return null; // Если задача не найдена - обновлять нечего
         }
+        Task oldTask = tasks.get(task.getId());
         try {
-            removeFromPrioritizedTasks(tasks.get(task.getId()));
+            removeFromPrioritizedTasks(oldTask);
             Task newTask = new Task(task);
-            tasks.put(task.getId(), newTask);
             addToPrioritizedTasks(newTask);
+            tasks.put(task.getId(), newTask);
             return task.getId();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
+            prioritizedTasks.add(oldTask); // Старое задание возвращаем без проверок
             return null;
         }
     }
@@ -190,16 +192,18 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtasks.containsKey(subtask.getId())) {
             return null; // Если задача не найдена - обновлять нечего
         }
+        Task oldSubtask = subtasks.get(subtask.getId());
         try {
-            removeFromPrioritizedTasks(subtasks.get(subtask.getId()));
+            removeFromPrioritizedTasks(oldSubtask);
             Subtask newSubtask = new Subtask(subtask);
-            subtasks.put(subtask.getId(), newSubtask);
             addToPrioritizedTasks(newSubtask);
+            subtasks.put(subtask.getId(), newSubtask);
             calcEpicStatus(subtask.getEpicId());
             calcEpicDuration(subtask.getEpicId());
             return subtask.getId();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
+            prioritizedTasks.add(oldSubtask);
             return null;
         }
     }
@@ -214,7 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void calcEpicStatus(Integer epicId) {
-        Epic epic = getEpicById(epicId);
+        Epic epic = epics.get(epicId);
         Set<Integer> epicSubtasks = epic.getChildrenTasks();
         boolean allNew = epicSubtasks.stream()
                 .allMatch(subtaskId -> subtasks.containsKey(subtaskId) && subtasks.get(subtaskId).getStatus() == TaskStatus.NEW);
@@ -227,13 +231,15 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
-        updateEpic(epic); // Поменять статус эпика в менеджере
     }
 
     @Override
     public void calcEpicDuration(Integer epicId) {
-        Epic epic = getEpicById(epicId);
+        Epic epic = epics.get(epicId);
         if (epic.getChildrenTasks().isEmpty()) {
+            epic.setDuration(Duration.ZERO.toMinutes());
+            epic.setStartTime(null);
+            epic.setEndTime(null);
             return;
         }
         List<Subtask> epicSubtasks = getEpicSubtasks(epicId);
@@ -247,8 +253,8 @@ public class InMemoryTaskManager implements TaskManager {
                 .min(LocalDateTime::compareTo);
 
         epic.setDuration(epicDuration.toMinutes());
-        epic.setStartTime(epicStart.orElse(null));
-        updateEpic(epic);
+        epicStart.ifPresent(epic::setStartTime);
+        epicStart.ifPresent(epic::setEndTime);
     }
 
     public List<Task> getHistory() {
