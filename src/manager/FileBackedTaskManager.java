@@ -5,10 +5,12 @@ import task.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-    static final String HEADER_STRING = "id,type,name,status,description,epic";
+    static final String HEADER_STRING = "id,type,name,status,description,duration,start_date,end_date,epic";
 
     public FileBackedTaskManager(String filename) {
         super();
@@ -64,12 +66,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else if (task.getType() == TaskType.SUBTASK) {
             taskType = TaskType.SUBTASK;
         }
-        return String.format("%d,%s,%s,%s,%s,%s\n",
+        return String.format("%d,%s,%s,%s,%s,%d,%s,%s,%s\n",
                 task.getId(),
                 taskType,
                 task.getName(),
                 task.getStatus(),
                 task.getDescription(),
+                task.getDuration() == null ? Duration.ZERO.toMinutes() : task.getDuration().toMinutes(),
+                task.getStartTime() == null ? " " : task.getStartTime(),
+                task.getEndTime() == null ? " " : task.getEndTime(),
                 taskType == TaskType.SUBTASK ? ((Subtask) task).getEpicId().toString() : "");
     }
 
@@ -81,17 +86,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = new Task(fields[2], fields[4]);
                 task.setId(Integer.parseInt(fields[0]));
                 task.setStatus(TaskStatus.valueOf(fields[3]));
+                task.setDuration(Long.parseLong(fields[5]));
+                if (!fields[6].isBlank())
+                    task.setStartTime(LocalDateTime.parse(fields[6]));
                 return task;
             case EPIC:
                 Epic epic = new Epic(fields[2], fields[4]);
                 epic.setId(Integer.parseInt(fields[0]));
                 epic.setStatus(TaskStatus.valueOf(fields[3]));
+                epic.setDuration(Long.parseLong(fields[5]));
+                if (!fields[6].isBlank())
+                    epic.setStartTime(LocalDateTime.parse(fields[6]));
+                if (!fields[7].isBlank())
+                    epic.setEndTime(LocalDateTime.parse(fields[7]));
                 return epic;
             case SUBTASK:
                 Subtask subtask = new Subtask(fields[2], fields[4]);
                 subtask.setId(Integer.parseInt(fields[0]));
                 subtask.setStatus(TaskStatus.valueOf(fields[3]));
-                subtask.setEpicId(Integer.parseInt(fields[5]));
+                subtask.setDuration(Long.parseLong(fields[5]));
+                if (!fields[6].isBlank())
+                    subtask.setStartTime(LocalDateTime.parse(fields[6]));
+                subtask.setEpicId(Integer.parseInt(fields[8]));
                 return subtask;
         }
         return null;
@@ -135,42 +151,42 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Integer createTask(Task task) {
-        int id = super.createTask(task);
+        Integer id = super.createTask(task);
         save();
         return id;
     }
 
     @Override
     public Integer createEpic(Epic epic) {
-        int id = super.createEpic(epic);
+        Integer id = super.createEpic(epic);
         save();
         return id;
     }
 
     @Override
     public Integer createSubtask(Subtask subtask, Epic epic) {
-        int id = super.createSubtask(subtask, epic);
+        Integer id = super.createSubtask(subtask, epic);
         save();
         return id;
     }
 
     @Override
     public Integer updateTask(Task task) {
-        int id = super.updateTask(task);
+        Integer id = super.updateTask(task);
         save();
         return id;
     }
 
     @Override
     public Integer updateEpic(Epic epic) {
-        int id = super.updateEpic(epic);
+        Integer id = super.updateEpic(epic);
         save();
         return id;
     }
 
     @Override
     public Integer updateSubtask(Subtask subtask) {
-        int id = super.updateSubtask(subtask);
+        Integer id = super.updateSubtask(subtask);
         save();
         return id;
     }

@@ -10,15 +10,14 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
-    private FileBackedTaskManager mgr;
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tmpFile;
 
     @BeforeEach
     public void beforeEach() {
         try {
             tmpFile = File.createTempFile("backup", ".csv", new File("./"));
-            mgr = new FileBackedTaskManager(tmpFile);
+            taskManager = new FileBackedTaskManager(tmpFile);
         } catch (IOException e) {
             throw new RuntimeException("Ошибка инициализации FileBackedTaskManager");
         }
@@ -26,7 +25,7 @@ public class FileBackedTaskManagerTest {
 
     @Test
     void shouldSaveAndLoadEmptyFile() {
-        mgr.deleteAllTasks(); // Сохраняем пустой менеджер
+        taskManager.deleteAllTasks(); // Сохраняем пустой менеджер
         FileBackedTaskManager anotherManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         assertTrue(anotherManager.getAllTasks().isEmpty());
@@ -38,14 +37,14 @@ public class FileBackedTaskManagerTest {
     void shouldSaveAndLoadNotEmptyFile() {
         Task task = new Task("Task 1", "Description 1");
         task.setStatus(TaskStatus.IN_PROGRESS);
-        int taskId = mgr.createTask(task);
+        int taskId = taskManager.createTask(task);
 
         Epic epic = new Epic("Epic 1", "Epic 1 Description");
-        int epicId = mgr.createEpic(epic);
+        int epicId = taskManager.createEpic(epic);
         Subtask subtask = new Subtask("Subtask 1", "Subtask 1 Description");
         subtask.setEpicId(epicId);
         subtask.setStatus(TaskStatus.DONE);
-        int subtaskId = mgr.createSubtask(subtask, epic);
+        int subtaskId = taskManager.createSubtask(subtask, epic);
 
         // Создаем копию менеджера из сохраненного файла
         FileBackedTaskManager anotherManager = FileBackedTaskManager.loadFromFile(tmpFile);
@@ -62,7 +61,7 @@ public class FileBackedTaskManagerTest {
 
         // Проверяем связь эпика с подзадачей
         Subtask loadedSubtask = anotherManager.getSubtaskById(subtaskId);
-        epic = mgr.getEpicById(epicId); // загрузить эпик из менеджера
+        epic = taskManager.getEpicById(epicId); // загрузить эпик из менеджера
         Epic loadedEpic = anotherManager.getEpicById(epicId);
         assertEquals(epicId, loadedSubtask.getEpicId());
         assertTrue(anotherManager.getEpicById(epicId).getChildrenTasks().contains(subtaskId));
