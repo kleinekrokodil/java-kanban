@@ -16,6 +16,8 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", new TasksHandler(mgr));
         httpServer.createContext("/subtasks", new SubtasksHandler(mgr));
         httpServer.createContext("/epics", new EpicsHandler(mgr));
+        httpServer.createContext("/history", new HistoryHandler(mgr));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(mgr));
         httpServer.start(); // запускаем сервер
 
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
