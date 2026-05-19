@@ -25,9 +25,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(Integer taskId) {
         // Защита от изменений в обход update-методов
-        Task task = new Task(tasks.get(taskId));
-        history.add(task);
-        return task;
+        if (tasks.containsKey(taskId)) {
+            Task task = new Task(tasks.get(taskId));
+            history.add(task);
+            return task;
+        } else {
+            throw new NoSuchElementException("Задачи с id=" + taskId + " не существует");
+        }
     }
 
     @Override
@@ -72,8 +76,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(Integer taskId) {
-        removeFromPrioritizedTasks(tasks.remove(taskId));
-        history.remove(taskId);
+        if (tasks.containsKey(taskId)) {
+            removeFromPrioritizedTasks(tasks.remove(taskId));
+            history.remove(taskId);
+        } else {
+            throw new NoSuchElementException("Задачи с id=" + taskId + " не существует");
+        }
     }
 
     // Эпики удаляем со всеми их подзадачами
@@ -123,14 +131,9 @@ public class InMemoryTaskManager implements TaskManager {
         task.setId(++counter);
         // Защита от последующих изменений в обход update-методов
         Task newTask = new Task(task);
-        try {
-            addToPrioritizedTasks(newTask);
-            tasks.put(task.getId(), newTask);
-            return task.getId();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        addToPrioritizedTasks(newTask);
+        tasks.put(task.getId(), newTask);
+        return task.getId();
     }
 
     @Override
@@ -162,7 +165,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer updateTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
-            return null; // Если задача не найдена - обновлять нечего
+            throw new NoSuchElementException("Задачи с id=" + task.getId() + " не существует");
         }
         Task oldTask = tasks.get(task.getId());
         try {
@@ -172,9 +175,8 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(task.getId(), newTask);
             return task.getId();
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
             prioritizedTasks.add(oldTask); // Старое задание возвращаем без проверок
-            return null;
+            throw e;
         }
     }
 

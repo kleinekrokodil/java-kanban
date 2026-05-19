@@ -1,4 +1,4 @@
-import manager.*;
+/*import manager.*;
 import task.*;
 
 //import java.io.File;
@@ -50,7 +50,7 @@ public class Main {
         System.out.println(mgr.getAllSubtasks());
         System.out.println("mgr.getHistory()");
         System.out.println(mgr.getHistory().size());
-        System.out.println(mgr.getHistory());*/
+        System.out.println(mgr.getHistory());
 
         // Измените статусы созданных объектов, распечатайте их.
         // Проверьте, что статус задачи и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач
@@ -80,7 +80,7 @@ public class Main {
         System.out.println("mgr.getPrioritizedTasks()");
         System.out.println(mgr.getPrioritizedTasks());
 
-        /* удалить одну из задач и один из эпиков
+         удалить одну из задач и один из эпиков
         mgr.deleteTaskById(task2.getId());
         mgr.deleteEpicById(epic2.getId()); // Должен удалиться с subtask 3
         mgr.deleteSubtaskById(subtask1.getId()); // Статус эпика должен поменяться на NEW
@@ -96,6 +96,6 @@ public class Main {
         System.out.println(mgr.getHistory().size());
         System.out.println(mgr.getHistory());
         System.out.println("mgr.getPrioritizedTasks()");
-        System.out.println(mgr.getPrioritizedTasks());*/
+        System.out.println(mgr.getPrioritizedTasks());
     }
-}
+}*/
