@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
-    private TaskManager mgr;
+    private final TaskManager mgr;
     enum Endpoint {GET_TASKS, GET_TASK_BY_ID, CREATE_TASK, UPDATE_TASK, DELETE_TASK, UNKNOWN}
 
     public TasksHandler(TaskManager mgr) {
@@ -147,14 +147,4 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         }
         return Endpoint.UNKNOWN;
     }
-
-    private Optional<Integer> getTaskId(HttpExchange exchange) {
-        String[] pathParts = exchange.getRequestURI().getPath().split("/");
-        try {
-            return Optional.of(Integer.parseInt(pathParts[2]));
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
-        }
-    }
-
 }

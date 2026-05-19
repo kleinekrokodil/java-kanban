@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public abstract class BaseHttpHandler {
     protected void sendText(HttpExchange exchange, String responseString) throws IOException {
@@ -29,5 +30,14 @@ public abstract class BaseHttpHandler {
         exchange.sendResponseHeaders(statusCode, 0);
         exchange.getResponseBody().write(responseString.getBytes(StandardCharsets.UTF_8));
         exchange.close();
+    }
+
+    protected Optional<Integer> getTaskId(HttpExchange exchange) {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            return Optional.of(Integer.parseInt(pathParts[2]));
+        } catch (NumberFormatException exception) {
+            return Optional.empty();
+        }
     }
 }

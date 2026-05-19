@@ -14,7 +14,8 @@ public class HttpTaskServer {
         TaskManager mgr = Managers.getDefault();
         HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler(mgr));
-        //httpServer.createContext("/day", new DayHandler());
+        httpServer.createContext("/subtasks", new SubtasksHandler(mgr));
+        httpServer.createContext("/epics", new EpicsHandler(mgr));
         httpServer.start(); // запускаем сервер
 
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
