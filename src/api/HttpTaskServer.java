@@ -9,17 +9,30 @@ import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
+    TaskManager mgr;
+    HttpServer httpServer;
 
-    public static void main(String[] args) throws IOException {
-        TaskManager mgr = Managers.getDefault();
-        HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+    public HttpTaskServer(TaskManager mgr) throws IOException {
+        this.mgr = mgr;
+        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler(mgr));
         httpServer.createContext("/subtasks", new SubtasksHandler(mgr));
         httpServer.createContext("/epics", new EpicsHandler(mgr));
         httpServer.createContext("/history", new HistoryHandler(mgr));
         httpServer.createContext("/prioritized", new PrioritizedHandler(mgr));
-        httpServer.start(); // запускаем сервер
+    }
 
+    public static void main(String[] args) throws IOException {
+        HttpTaskServer server = new HttpTaskServer(Managers.getDefault());
+        server.start();
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+    }
+
+    public void start() {
+        httpServer.start();
+    }
+
+    public void stop() {
+        httpServer.stop(0);
     }
 }
