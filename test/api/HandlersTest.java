@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class HandlersTest {
     TaskManager mgr = new InMemoryTaskManager();
     HttpTaskServer taskServer = new HttpTaskServer(mgr);
-    Gson gson = new Gson();
+    Gson gson = taskServer.getGson();
 
     public HandlersTest() throws IOException {
     }

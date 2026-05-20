@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
+    private final Gson gson;
 
     enum Endpoint {
         GET_SUBTASKS,
@@ -25,8 +26,9 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         UNKNOWN
     }
 
-    public SubtasksHandler(TaskManager mgr) {
+    public SubtasksHandler(TaskManager mgr, Gson gson) {
         this.mgr = mgr;
+        this.gson = gson;
     }
 
     @Override
@@ -60,7 +62,6 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetSubtasks(HttpExchange exchange) throws IOException {
-        Gson gson = new Gson();
         List<Subtask> allSubtasks = mgr.getAllSubtasks();
         String response = gson.toJson(allSubtasks);
         sendText(exchange, response);
@@ -75,7 +76,6 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         Integer subtaskId = subtaskIdOpt.get();
         try {
             Subtask subtask = mgr.getSubtaskById(subtaskId);
-            Gson gson = new Gson();
             String response = gson.toJson(subtask);
             sendText(exchange, response);
         } catch (NoSuchElementException e) {
@@ -85,7 +85,6 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleCreateSubtask(HttpExchange exchange) throws IOException {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Subtask subtask = gson.fromJson(body, Subtask.class);
         try {
             Epic epic = mgr.getEpicById(subtask.getEpicId());
@@ -107,7 +106,6 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         Integer subtaskId = subtaskIdOpt.get();
 
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Subtask subtask = gson.fromJson(body, Subtask.class);
         subtask.setId(subtaskId);
         try {

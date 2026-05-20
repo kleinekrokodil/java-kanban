@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
+    private final Gson gson;
 
     enum Endpoint {
         GET_TASKS,
@@ -24,8 +25,9 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         UNKNOWN
     }
 
-    public TasksHandler(TaskManager mgr) {
+    public TasksHandler(TaskManager mgr, Gson gson) {
         this.mgr = mgr;
+        this.gson = gson;
     }
 
     @Override
@@ -59,7 +61,6 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetTasks(HttpExchange exchange) throws IOException {
-        Gson gson = new Gson();
         List<Task> allTasks = mgr.getAllTasks();
         String response = gson.toJson(allTasks);
         sendText(exchange, response);
@@ -74,7 +75,6 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         Integer taskId = taskIdOpt.get();
         try {
             Task task = mgr.getTaskById(taskId);
-            Gson gson = new Gson();
             String response = gson.toJson(task);
             sendText(exchange, response);
         } catch (NoSuchElementException e) {
@@ -84,7 +84,6 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleCreateTask(HttpExchange exchange) throws IOException {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Task task = gson.fromJson(body, Task.class);
         try {
             mgr.createTask(task);
@@ -103,7 +102,6 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         Integer taskId = taskIdOpt.get();
 
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Task task = gson.fromJson(body, Task.class);
         task.setId(taskId);
         try {

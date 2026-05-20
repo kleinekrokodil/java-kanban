@@ -11,14 +11,16 @@ import java.util.List;
 
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
+    private final Gson gson;
 
     enum Endpoint {
         GET_PRIORITIZED,
         UNKNOWN
     }
 
-    public PrioritizedHandler(TaskManager mgr) {
+    public PrioritizedHandler(TaskManager mgr, Gson gson) {
         this.mgr = mgr;
+        this.gson = gson;
     }
 
     @Override
@@ -32,7 +34,6 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetPrioritized(HttpExchange exchange) throws IOException {
-        Gson gson = new Gson();
         List<Task> prioritized = mgr.getPrioritizedTasks();
         String response = gson.toJson(prioritized);
         sendText(exchange, response);

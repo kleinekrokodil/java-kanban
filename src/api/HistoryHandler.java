@@ -11,14 +11,16 @@ import java.util.List;
 
 public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
+    private final Gson gson;
 
     enum Endpoint {
         GET_HISTORY,
         UNKNOWN
     }
 
-    public HistoryHandler(TaskManager mgr) {
+    public HistoryHandler(TaskManager mgr, Gson gson) {
         this.mgr = mgr;
+        this.gson = gson;
     }
 
     @Override
@@ -32,7 +34,6 @@ public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetHistory(HttpExchange exchange) throws IOException {
-        Gson gson = new Gson();
         List<Task> history = mgr.getHistory();
         String response = gson.toJson(history);
         sendText(exchange, response);

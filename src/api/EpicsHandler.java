@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
+    private final Gson gson;
 
     enum Endpoint {
         GET_EPICS,
@@ -26,8 +27,9 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         UNKNOWN
     }
 
-    public EpicsHandler(TaskManager mgr) {
+    public EpicsHandler(TaskManager mgr, Gson gson) {
         this.mgr = mgr;
+        this.gson = gson;
     }
 
     @Override
@@ -65,7 +67,6 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetEpics(HttpExchange exchange) throws IOException {
-        Gson gson = new Gson();
         List<Epic> allEpics = mgr.getAllEpics();
         String response = gson.toJson(allEpics);
         sendText(exchange, response);
@@ -80,7 +81,6 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         Integer epicId = epicIdOpt.get();
         try {
             Epic epic = mgr.getEpicById(epicId);
-            Gson gson = new Gson();
             String response = gson.toJson(epic);
             sendText(exchange, response);
         } catch (NoSuchElementException e) {
@@ -97,7 +97,6 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         Integer epicId = epicIdOpt.get();
         try {
             List<Subtask> epicSubtasks = mgr.getEpicSubtasks(epicId);
-            Gson gson = new Gson();
             String response = gson.toJson(epicSubtasks);
             sendText(exchange, response);
         } catch (NoSuchElementException e) {
@@ -107,7 +106,6 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleCreateEpic(HttpExchange exchange) throws IOException {
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Epic epic = gson.fromJson(body, Epic.class);
         try {
             mgr.createEpic(epic);
@@ -128,7 +126,6 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         Integer epicId = epicIdOpt.get();
 
         String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
         Epic epic = gson.fromJson(body, Epic.class);
         epic.setId(epicId);
         try {
