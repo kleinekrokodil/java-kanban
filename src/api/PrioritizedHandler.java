@@ -11,7 +11,11 @@ import java.util.List;
 
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
-    enum Endpoint {GET_PRIORITIZED, UNKNOWN}
+
+    enum Endpoint {
+        GET_PRIORITIZED,
+        UNKNOWN
+    }
 
     public PrioritizedHandler(TaskManager mgr) {
         this.mgr = mgr;

@@ -11,7 +11,11 @@ import java.util.List;
 
 public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
-    enum Endpoint {GET_HISTORY, UNKNOWN}
+
+    enum Endpoint {
+        GET_HISTORY,
+        UNKNOWN
+    }
 
     public HistoryHandler(TaskManager mgr) {
         this.mgr = mgr;

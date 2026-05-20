@@ -15,7 +15,16 @@ import java.util.Optional;
 
 public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
-    enum Endpoint {GET_EPICS, GET_EPIC_BY_ID, GET_EPIC_SUBTASKS, CREATE_EPIC, UPDATE_EPIC, DELETE_SUBTASK, UNKNOWN}
+
+    enum Endpoint {
+        GET_EPICS,
+        GET_EPIC_BY_ID,
+        GET_EPIC_SUBTASKS,
+        CREATE_EPIC,
+        UPDATE_EPIC,
+        DELETE_SUBTASK,
+        UNKNOWN
+    }
 
     public EpicsHandler(TaskManager mgr) {
         this.mgr = mgr;

@@ -15,7 +15,15 @@ import java.util.Optional;
 
 public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager mgr;
-    enum Endpoint {GET_SUBTASKS, GET_SUBTASK_BY_ID, CREATE_SUBTASK, UPDATE_SUBTASK, DELETE_SUBTASK, UNKNOWN}
+
+    enum Endpoint {
+        GET_SUBTASKS,
+        GET_SUBTASK_BY_ID,
+        CREATE_SUBTASK,
+        UPDATE_SUBTASK,
+        DELETE_SUBTASK,
+        UNKNOWN
+    }
 
     public SubtasksHandler(TaskManager mgr) {
         this.mgr = mgr;
