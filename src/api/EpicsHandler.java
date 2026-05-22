@@ -75,7 +75,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetEpicById(HttpExchange exchange) throws IOException {
         Optional<Integer> epicIdOpt = getTaskId(exchange);
         if (epicIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", STATUS_CODE_400);
             return;
         }
         Integer epicId = epicIdOpt.get();
@@ -91,7 +91,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
         Optional<Integer> epicIdOpt = getTaskId(exchange);
         if (epicIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", STATUS_CODE_400);
             return;
         }
         Integer epicId = epicIdOpt.get();
@@ -109,7 +109,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         Epic epic = gson.fromJson(body, Epic.class);
         try {
             mgr.createEpic(epic);
-            sendSimpleMessage(exchange, "Эпик успешно создан", 201);
+            sendSimpleMessage(exchange, "Эпик успешно создан", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         } catch (NoSuchElementException e) {
@@ -120,7 +120,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private void handleUpdateEpic(HttpExchange exchange) throws IOException {
         Optional<Integer> epicIdOpt = getTaskId(exchange);
         if (epicIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", STATUS_CODE_400);
             return;
         }
         Integer epicId = epicIdOpt.get();
@@ -130,7 +130,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         epic.setId(epicId);
         try {
             mgr.updateEpic(epic);
-            sendSimpleMessage(exchange, "Эпик успешно обновлен", 201);
+            sendSimpleMessage(exchange, "Эпик успешно обновлен", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         } catch (NoSuchElementException e) {
@@ -141,13 +141,13 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteEpic(HttpExchange exchange) throws IOException {
         Optional<Integer> epicIdOpt = getTaskId(exchange);
         if (epicIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор эпика", STATUS_CODE_400);
             return;
         }
         Integer epicId = epicIdOpt.get();
         try {
             mgr.deleteEpicById(epicId);
-            sendSimpleMessage(exchange, "Эпик с id=" + epicId + " успешно удален", 200);
+            sendSimpleMessage(exchange, "Эпик с id=" + epicId + " успешно удален", STATUS_CODE_200);
         } catch (NoSuchElementException e) {
             sendNotFound(exchange, e.getMessage());
         }

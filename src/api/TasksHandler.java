@@ -69,7 +69,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetTaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> taskIdOpt = getTaskId(exchange);
         if (taskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", STATUS_CODE_400);
             return;
         }
         Integer taskId = taskIdOpt.get();
@@ -87,7 +87,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         Task task = gson.fromJson(body, Task.class);
         try {
             mgr.createTask(task);
-            sendSimpleMessage(exchange, "Задача успешно создана", 201);
+            sendSimpleMessage(exchange, "Задача успешно создана", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         }
@@ -96,7 +96,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleUpdateTask(HttpExchange exchange) throws IOException {
         Optional<Integer> taskIdOpt = getTaskId(exchange);
         if (taskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", STATUS_CODE_400);
             return;
         }
         Integer taskId = taskIdOpt.get();
@@ -106,7 +106,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         task.setId(taskId);
         try {
             mgr.updateTask(task);
-            sendSimpleMessage(exchange, "Задача успешно обновлена", 201);
+            sendSimpleMessage(exchange, "Задача успешно обновлена", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         } catch (NoSuchElementException e) {
@@ -117,13 +117,13 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteTask(HttpExchange exchange) throws IOException {
         Optional<Integer> taskIdOpt = getTaskId(exchange);
         if (taskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор задачи", STATUS_CODE_400);
             return;
         }
         Integer taskId = taskIdOpt.get();
         try {
             mgr.deleteTaskById(taskId);
-            sendSimpleMessage(exchange, "Задача с id=" + taskId + " успешно удалена", 200);
+            sendSimpleMessage(exchange, "Задача с id=" + taskId + " успешно удалена", STATUS_CODE_200);
         } catch (NoSuchElementException e) {
             sendNotFound(exchange, e.getMessage());
         }

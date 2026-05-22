@@ -35,7 +35,7 @@ public class TasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         JsonElement responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonArray());
@@ -56,7 +56,7 @@ public class TasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/tasks/" + taskId);
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         JsonElement responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonObject());
@@ -67,7 +67,7 @@ public class TasksHandlerTest extends HandlersTest {
         url = URI.create("http://localhost:8080/tasks/" + 42);
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(404, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_404, response.statusCode());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class TasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(taskJson))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_201, response.statusCode());
 
         List<Task> tasksFromManager = mgr.getAllTasks();
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
@@ -100,7 +100,7 @@ public class TasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(taskJson))
                 .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(406, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_406, response.statusCode());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class TasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(taskJson))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_201, response.statusCode());
 
         Task taskFromManager = mgr.getTaskById(taskId);
         assertEquals(task, taskFromManager, "Задачи должны быть идентичны");
@@ -137,7 +137,7 @@ public class TasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/tasks/" + taskId);
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
         assertEquals(0, mgr.getAllTasks().size(), "Список задач должен быть пуст");
     }
 }

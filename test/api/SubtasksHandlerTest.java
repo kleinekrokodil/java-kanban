@@ -41,7 +41,7 @@ public class SubtasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         JsonElement responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonArray());
@@ -66,7 +66,7 @@ public class SubtasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/subtasks/" + subtaskId);
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         JsonElement responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonObject());
@@ -77,7 +77,7 @@ public class SubtasksHandlerTest extends HandlersTest {
         url = URI.create("http://localhost:8080/subtasks/" + 42);
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(404, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_404, response.statusCode());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class SubtasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(subtaskJson))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_201, response.statusCode());
 
         List<Subtask> tasksFromManager = mgr.getAllSubtasks();
         assertEquals(1, tasksFromManager.size(), "Некорректное количество подзадач");
@@ -115,7 +115,7 @@ public class SubtasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(subtaskJson))
                 .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(406, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_406, response.statusCode());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class SubtasksHandlerTest extends HandlersTest {
                 .POST(HttpRequest.BodyPublishers.ofString(subtaskJson))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(201, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_201, response.statusCode());
 
         Subtask subtaskFromManager = mgr.getSubtaskById(subtaskId);
         assertEquals(subtask, subtaskFromManager, "Подзадачи должны быть идентичны");
@@ -162,7 +162,7 @@ public class SubtasksHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/subtasks/" + subtaskId);
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
         assertEquals(0, mgr.getAllSubtasks().size(), "Список задач должен быть пуст");
     }
 }

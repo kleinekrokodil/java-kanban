@@ -70,7 +70,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> subtaskIdOpt = getTaskId(exchange);
         if (subtaskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", STATUS_CODE_400);
             return;
         }
         Integer subtaskId = subtaskIdOpt.get();
@@ -89,7 +89,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         try {
             Epic epic = mgr.getEpicById(subtask.getEpicId());
             mgr.createSubtask(subtask, epic);
-            sendSimpleMessage(exchange, "Подадача успешно создана", 201);
+            sendSimpleMessage(exchange, "Подадача успешно создана", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         } catch (NoSuchElementException e) {
@@ -100,7 +100,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleUpdateSubtask(HttpExchange exchange) throws IOException {
         Optional<Integer> subtaskIdOpt = getTaskId(exchange);
         if (subtaskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", STATUS_CODE_400);
             return;
         }
         Integer subtaskId = subtaskIdOpt.get();
@@ -110,7 +110,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         subtask.setId(subtaskId);
         try {
             mgr.updateSubtask(subtask);
-            sendSimpleMessage(exchange, "Подзадача успешно обновлена", 201);
+            sendSimpleMessage(exchange, "Подзадача успешно обновлена", STATUS_CODE_201);
         } catch (IllegalArgumentException e) {
             sendHasInteractions(exchange, e.getMessage());
         } catch (NoSuchElementException e) {
@@ -121,13 +121,14 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteSubtask(HttpExchange exchange) throws IOException {
         Optional<Integer> subtaskIdOpt = getTaskId(exchange);
         if (subtaskIdOpt.isEmpty()) {
-            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", 400);
+            sendSimpleMessage(exchange, "Некорректный идентификатор подзадачи", STATUS_CODE_400);
             return;
         }
         Integer subtaskId = subtaskIdOpt.get();
         try {
             mgr.deleteSubtaskById(subtaskId);
-            sendSimpleMessage(exchange, "Подзадача с id=" + subtaskId + " успешно удалена", 200);
+            sendSimpleMessage(exchange, "Подзадача с id=" + subtaskId + " успешно удалена",
+                    STATUS_CODE_200);
         } catch (NoSuchElementException e) {
             sendNotFound(exchange, e.getMessage());
         }

@@ -28,7 +28,7 @@ public class HistoryHandlerTest extends HandlersTest {
         URI url = URI.create("http://localhost:8080/history");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         JsonElement responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonArray());
@@ -40,7 +40,7 @@ public class HistoryHandlerTest extends HandlersTest {
         task = mgr.getTaskById(taskId);
 
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(BaseHttpHandler.STATUS_CODE_200, response.statusCode());
 
         responseJson = JsonParser.parseString(response.body());
         assertTrue(responseJson.isJsonArray());
