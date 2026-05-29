@@ -209,6 +209,6 @@ abstract class TaskManagerTest <T extends TaskManager>  {
         task2.setStartTime(LocalDateTime.of(2026, 5, 1, 11, 0));
         task2.setDuration(30);
 
-        assertNull(taskManager.createTask(task2));
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createTask(task2));
     }
 }

@@ -6,7 +6,7 @@ public class Managers {
     }
 
     public static TaskManager getDefault() {
-        return new FileBackedTaskManager("backup.csv");
+        return new InMemoryTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
